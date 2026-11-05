@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <!-- Updater assemblies load via Assembly.Load(bytes) from modules\ so they are not file-exclusively locked; MSBuild can overwrite modules\ while the app runs. -->
+  <Target Name="StripUpdaterCopyLocalFromOutputRoot"
+          AfterTargets="ResolveAssemblyReferences"
+          BeforeTargets="_CopyFilesMarkedCopyLocal"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+                               Condition="'%(Filename)' == 'Updater.Cli' or '%(Filename)' == 'Updater.Core'" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CopyUpdaterAssembliesToModulesSubfolder"
+          AfterTargets="StripUpdaterCopyLocalFromOutputRoot"
+          BeforeTargets="_CopyFilesMarkedCopyLocal"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <_UpdaterCli>$(MSBuildProjectDirectory)\Updater.Cli\bin\$(Configuration)\net9.0-windows\Updater.Cli.dll</_UpdaterCli>
+      <_UpdaterCore>$(MSBuildProjectDirectory)\Updater.Core\bin\$(Configuration)\net9.0\Updater.Core.dll</_UpdaterCore>
+    </PropertyGroup>
+    <MakeDir Directories="$(OutDir)modules" />
+    <ItemGroup>
+      <_UpdaterModuleFile Include="$(_UpdaterCli)" Condition="Exists('$(_UpdaterCli)')" />
+      <_UpdaterModuleFile Include="$(_UpdaterCore)" Condition="Exists('$(_UpdaterCore)')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_UpdaterModuleFile)"
+          DestinationFolder="$(OutDir)modules"
+          SkipUnchangedFiles="false" />
+  </Target>
+
+  <!-- Remove old layout (root) copies so the runtime does not pick them over modules\. -->
+  <Target Name="RemoveLegacyUpdaterDllsFromOutputRoot"
+          AfterTargets="CopyUpdaterAssembliesToModulesSubfolder"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Delete Files="$(OutDir)Updater.Cli.dll" ContinueOnError="true" />
+    <Delete Files="$(OutDir)Updater.Core.dll" ContinueOnError="true" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="Updater.Cli\Updater.Cli.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="QuestPDF" Version="2024.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="_temp_*\**" />
+    <Compile Remove="_temp_RemoteMachineAgent\**" />
+    <Compile Remove="_temp_ResidentOpenExe\**" />
+    <Compile Remove="Updater.Cli\**" />
+    <Compile Remove="Updater.Core\**" />
+    <Content Remove="Updater.Cli\**" />
+    <Content Remove="Updater.Core\**" />
+    <EmbeddedResource Remove="Updater.Cli\**" />
+    <EmbeddedResource Remove="Updater.Core\**" />
+    <None Remove="Updater.Cli\**" />
+    <None Remove="Updater.Core\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\obj\**" />
+    <Compile Remove="**\bin\**" />
+    <Content Remove="**\obj\**" />
+    <Content Remove="**\bin\**" />
+    <EmbeddedResource Remove="**\obj\**" />
+    <EmbeddedResource Remove="**\bin\**" />
+    <None Remove="**\obj\**" />
+    <None Remove="**\bin\**" />
+  </ItemGroup>
+
+</Project>
+

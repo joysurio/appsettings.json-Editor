@@ -1,0 +1,48 @@
+{
+  "machineTypes": [
+    {
+      "machineType": "dispenser",
+      "displayName": "Dispenser",
+      "sections": [
+        "ConnectionStrings",
+        "AppSettings",
+        "DispenseConfiguration",
+        "AntennaConfiguration",
+        "EmailConfiguration"
+      ],
+      "parameters": {}
+    },
+    {
+      "machineType": "collector",
+      "displayName": "Collector",
+      "sections": [
+        "ConnectionStrings",
+        "AppSettings",
+        "AntennaConfiguration",
+        "EmailConfiguration"
+      ],
+      "parameters": {}
+    },
+    {
+      "machineType": "gravity",
+      "displayName": "Gravity Machine",
+      "sections": [
+        "ConnectionStrings",
+        "AppSettings",
+        "EmailConfiguration"
+      ],
+      "parameters": {}
+    },
+    {
+      "machineType": "locker",
+      "displayName": "Locker",
+      "sections": [
+        "ConnectionStrings",
+        "AppSettings",
+        "AntennaConfiguration",
+        "EmailConfiguration"
+      ],
+      "parameters": {}
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "Id": "ad0c33f5-195b-412a-b9e5-59d5b420b50c",
+    "Name": "",
+    "Address": "",
+    "ConnectionMethod": "NetworkShare",
+    "NetworkSharePath": "",
+    "Username": "",
+    "Password": "",
+    "RustDeskId": "",
+    "RustDeskPassword": null,
+    "RemoteAppSettingsPath": "C:\\Path\\To\\appsettings.json",
+    "MachineType": "",
+    "LastStatus": 0,
+    "LastConnectionAttempt": null,
+    "Notes": null
+  }
+]
